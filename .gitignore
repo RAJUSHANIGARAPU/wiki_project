@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+
+# Reports
+reports/
+
+# IDE
+.idea/
+*.iml
+
+# Mac
+.DS_Store
