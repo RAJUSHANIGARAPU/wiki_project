@@ -1,0 +1,8 @@
+{
+  "dev": {
+    "base_url": "https://www.google.com"
+  },
+  "qa": {
+    "base_url": "https://www.wikipedia.org"
+  }
+}
