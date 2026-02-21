@@ -14,3 +14,7 @@ class SearchResultsPage(BasePage):
         )
         expect(self.resolve("lot_cards").first).to_be_visible()
         expect(self.page.get_by_role("heading", level=1)).to_contain_text(keyword)
+
+    def verify_no_results_displayed(self):
+        message = self.resolve("search_no_results_message")
+        expect(message).to_be_visible()

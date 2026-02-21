@@ -18,3 +18,9 @@ class SearchFlow:
         self.results.verify_results_page_loaded(keyword)
         self.results.click_second_lot()
         self.lot.verify_lot_page_loaded()
+
+    def search_and_verify_no_results(self, keyword):
+        self.home.navigate()
+        self.home.accept_cookies()
+        self.home.search(keyword)
+        self.results.verify_no_results_displayed()

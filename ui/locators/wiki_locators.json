@@ -33,5 +33,9 @@
   "current_bid_section": {
     "type": "css",
     "value": "[data-testid='lot-bid-status-section']"
+  },
+  "search_no_results_message": {
+    "type": "css",
+    "value": "p:has-text('No matches for')"
   }
 }
