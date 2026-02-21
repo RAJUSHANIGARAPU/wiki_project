@@ -1,48 +1,64 @@
-# Playwright TestPilot Framework
+# TestPilot UI Automation Framework
 
-Modern, scalable UI automation framework built with:
-
--   PyTest
--   Playwright (plugin-based lifecycle)
--   Dockerized execution
--   Parallel execution (xdist)
--   Retry strategy
--   Allure-ready reporting
--   Video and Trace recording
--   Screenshot on failure
--   Ruff linting
--   GitHub Actions CI
--   Multi-environment support
+TestPilot is a production-grade, scalable UI automation framework built
+using Playwright and PyTest.\
+It is designed with clean architecture, CI readiness, Docker
+reproducibility, and recruiter-level code quality in mind.
 
 ------------------------------------------------------------------------
 
-## Overview
+## Table of Contents
 
-TestPilot is a production-ready UI automation framework designed to be:
-
--   Scalable
--   Maintainable
--   CI-friendly
--   Containerized
--   Architecturally clean
-
-It leverages the official Playwright pytest plugin for modern browser
-lifecycle management.
-
-------------------------------------------------------------------------
-
-## Architecture
-
-project/ ├── core/ \# Core utilities (config reader, base logic) ├── ui/
-│ ├── pages/ \# Page Objects │ ├── locators/ \# JSON-based locators │
-├── tests/ \# Test files │ ├── fixtures/ \# UI-specific fixtures │ └──
-utils/ ├── reports/ \# Logs, traces, videos, screenshots ├──
-.github/workflows/ \# CI pipeline ├── docker-compose.yml ├── Dockerfile
-├── pytest.ini ├── pyproject.toml \# Ruff configuration └── README.md
+1.  Overview\
+2.  Architecture\
+3.  Core Features (20 Capabilities)\
+4.  Project Structure\
+5.  Installation & Local Setup\
+6.  Running Tests\
+7.  Markers & Test Segmentation\
+8.  Docker Execution\
+9.  Debugging & Artifacts\
+10. Continuous Integration\
+11. Code Quality & Linting\
+12. Configuration & Environments\
+13. Design Decisions\
+14. Extensibility Strategy\
+15. License
 
 ------------------------------------------------------------------------
 
-## Core Capabilities
+## 1. Overview
+
+TestPilot is a modern UI automation framework that demonstrates:
+
+-   Clean Page Object Model (POM)
+-   JSON-based locator management
+-   Plugin-based Playwright lifecycle
+-   Contract-level network validation
+-   Dockerized and CI-ready execution
+-   Structured logging and artifact generation
+
+The framework is built to be maintainable, scalable, and
+production-ready.
+
+------------------------------------------------------------------------
+
+## 2. Architecture
+
+The framework follows a layered architecture:
+
+-   Tests → Call Flows\
+-   Flows → Orchestrate Pages\
+-   Pages → Extend BasePage\
+-   BasePage → Handles locator resolution\
+-   Locators → JSON-based configuration\
+-   Config → Environment-based URL management
+
+This separation ensures clean responsibilities and maintainability.
+
+------------------------------------------------------------------------
+
+## 3. Core Capabilities (20 Features)
 
 1.  Plugin-Based Playwright Lifecycle\
 2.  Multi-Browser Execution (Chromium, Firefox, WebKit)\
@@ -51,117 +67,203 @@ utils/ ├── reports/ \# Logs, traces, videos, screenshots ├──
 5.  Retry Strategy via pytest-rerunfailures\
 6.  Automatic Screenshot on Failure\
 7.  Video Recording per Test\
-8.  Playwright Tracing (DOM, network, console, timeline)\
+8.  Playwright Tracing (DOM, network, timeline)\
 9.  Dockerized Execution\
-10. Mounted Artifacts Persistence\
+10. Mounted Artifact Persistence\
 11. Environment-Based Configuration\
 12. Structured Logging\
 13. GitHub Actions CI Integration\
 14. Artifact Upload in CI\
-15. Ruff Linting\
-16. Pre-Commit Hooks\
+15. Ruff Linting Enforcement\
+16. Pre-Commit Hook Support\
 17. Clean Page Object Model\
 18. JSON-Based Locator Strategy\
-19. CI Dependency Caching\
+19. Contract-Level Network Validation\
 20. Modular, Recruiter-Ready Architecture
 
 ------------------------------------------------------------------------
 
-## Setup
+## 4. Project Structure
+
+    project/
+    ├── api/
+    │   ├── clients/
+    │   └── tests/
+    ├── core/
+    │   ├── base_page.py
+    │   ├── config_reader.py
+    │   └── logger.py
+    ├── config/
+    │   └── environments.json
+    ├── ui/
+    │   ├── pages/
+    │   ├── flows/
+    │   ├── locators/
+    │   ├── testdata/
+    │   └── tests/
+    ├── reports/
+    ├── Dockerfile
+    ├── docker-compose.yml
+    ├── pytest.ini
+    ├── pyproject.toml
+    └── README.md
+
+------------------------------------------------------------------------
+
+## 5. Installation & Local Setup
 
 ### Clone Repository
 
-git clone `<repository-url>`{=html} cd project
+    git clone <repository-url>
+    cd project
 
 ### Install Dependencies
 
-pip install -r requirements.txt playwright install --with-deps
-
-### Run Tests Locally
-
-pytest
-
-Run with Firefox:
-
-pytest --browser firefox
-
-Run in parallel:
-
-pytest -n 4
+    pip install -r requirements.txt
+    playwright install --with-deps
 
 ------------------------------------------------------------------------
 
-## Docker Usage
+## 6. Running Tests
+
+Run all tests:
+
+    pytest
+
+Run specific browser:
+
+    pytest --browser firefox
+
+Run headed mode:
+
+    pytest --headed
+
+Run in parallel:
+
+    pytest -n 4
+
+------------------------------------------------------------------------
+
+## 7. Markers & Test Segmentation
+
+Run contract tests:
+
+    pytest -m contract
+
+Run negative tests:
+
+    pytest -m negative
+
+Run API tests:
+
+    pytest -m api
+
+------------------------------------------------------------------------
+
+## 8. Docker Execution
 
 ### Build Image
 
-docker compose build
+    docker compose build
 
 ### Run Tests
 
-docker compose run tests
+    docker compose run tests
 
-Run with Firefox:
+Run with browser override:
 
-docker compose run tests --browser firefox
+    docker compose run tests --browser firefox
 
 Run in parallel:
 
-docker compose run tests -n 4
+    docker compose run tests -n 4
 
-Artifacts are stored in the local reports/ directory.
+Artifacts are persisted in the local `reports/` directory.
 
 ------------------------------------------------------------------------
 
-## Debugging
+## 9. Debugging & Artifacts
 
 Open Playwright trace:
 
-playwright show-trace reports/traces/\<trace.zip\>
+    playwright show-trace reports/traces/<trace.zip>
 
 View recorded video:
 
-open reports/videos/`<file>`{=html}.webm
+    open reports/videos/<file>.webm
+
+Logs are stored in:
+
+    reports/logs/test.log
 
 ------------------------------------------------------------------------
 
-## Continuous Integration
+## 10. Continuous Integration
 
-Workflow file:
+Workflow location:
 
-.github/workflows/test.yml
+    .github/workflows/tests.yml
 
-Pipeline steps:
+Pipeline includes:
 
--   Install dependencies
--   Install Playwright browsers
--   Run linter
--   Execute tests in parallel
--   Upload reports as artifacts
-
-------------------------------------------------------------------------
-
-## Tech Stack
-
--   Python 3.11
--   PyTest
--   Playwright
--   Docker
--   Ruff
--   GitHub Actions
+-   Dependency installation
+-   Playwright browser setup
+-   Ruff lint check
+-   Parallel test execution
+-   Artifact upload
 
 ------------------------------------------------------------------------
 
-## Future Improvements
+## 11. Code Quality & Linting
 
--   Allure HTML report publishing in CI
+Run Ruff:
+
+    ruff check .
+    ruff format .
+
+This ensures:
+
+-   No unused imports
+-   No bare exceptions
+-   Clean formatting
+-   Enforced best practices
+
+------------------------------------------------------------------------
+
+## 12. Configuration & Environments
+
+Environment configuration is managed via:
+
+    config/environments.json
+
+Switch environment using:
+
+    pytest --env qa
+
+The ConfigReader class dynamically resolves base URLs.
+
+------------------------------------------------------------------------
+
+## 13. Design Decisions
+
+-   No raw selectors in tests\
+-   Centralized locator strategy\
+-   Flow-based test orchestration\
+-   Browser lifecycle managed by plugin\
+-   Docker-first reproducibility\
+-   CI integration from day one
+
+------------------------------------------------------------------------
+
+## 14. Extensibility Strategy
+
+The framework supports:
+
+-   Additional flows
+-   API layer expansion
+-   Cross-layer contract tests
+-   Performance assertions
+-   Allure report publishing
 -   Multi-browser CI matrix
--   Coverage metrics
--   Flaky test analytics
--   Template repository packaging
 
 ------------------------------------------------------------------------
-
-## License
-
-MIT
