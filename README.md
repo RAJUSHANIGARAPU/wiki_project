@@ -1,4 +1,4 @@
-# TestPilot UI Automation Framework
+# Test Automation Framework
 
 TestPilot is a production-grade, scalable UI automation framework built using Playwright and PyTest.
 It is designed with clean architecture, CI readiness, Docker reproducibility, and recruiter-level code quality in mind.
