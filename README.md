@@ -1,28 +1,26 @@
 # TestPilot UI Automation Framework
 
-TestPilot is a production-grade, scalable UI automation framework built
-using Playwright and PyTest.\
-It is designed with clean architecture, CI readiness, Docker
-reproducibility, and recruiter-level code quality in mind.
+TestPilot is a production-grade, scalable UI automation framework built using Playwright and PyTest.
+It is designed with clean architecture, CI readiness, Docker reproducibility, and recruiter-level code quality in mind.
 
 ------------------------------------------------------------------------
 
 ## Table of Contents
 
-1.  Overview\
-2.  Architecture\
-3.  Core Features (20 Capabilities)\
-4.  Project Structure\
-5.  Installation & Local Setup\
-6.  Running Tests\
-7.  Markers & Test Segmentation\
-8.  Docker Execution\
-9.  Debugging & Artifacts\
-10. Continuous Integration\
-11. Code Quality & Linting\
-12. Configuration & Environments\
-13. Design Decisions\
-14. Extensibility Strategy\
+1.  Overview
+2.  Architecture
+3.  Core Features
+4.  Project Structure
+5.  Installation & Local Setup
+6.  Running Tests
+7.  Markers & Test Segmentation
+8.  Docker Execution
+9.  Debugging & Artifacts
+10. Continuous Integration
+11. Code Quality & Linting
+12. Configuration & Environments
+13. Design Decisions
+14. Extensibility Strategy
 15. License
 
 ------------------------------------------------------------------------
@@ -47,39 +45,39 @@ production-ready.
 
 The framework follows a layered architecture:
 
--   Tests → Call Flows\
--   Flows → Orchestrate Pages\
--   Pages → Extend BasePage\
--   BasePage → Handles locator resolution\
--   Locators → JSON-based configuration\
+-   Tests → Call Flows
+-   Flows → Orchestrate Pages
+-   Pages → Extend BasePage
+-   BasePage → Handles locator resolution
+-   Locators → JSON-based configuration
 -   Config → Environment-based URL management
 
 This separation ensures clean responsibilities and maintainability.
 
 ------------------------------------------------------------------------
 
-## 3. Core Capabilities (20 Features)
+## 3. Core Capabilities
 
-1.  Plugin-Based Playwright Lifecycle\
-2.  Multi-Browser Execution (Chromium, Firefox, WebKit)\
-3.  Headed and Headless Execution\
-4.  Parallel Execution via pytest-xdist\
-5.  Retry Strategy via pytest-rerunfailures\
-6.  Automatic Screenshot on Failure\
-7.  Video Recording per Test\
-8.  Playwright Tracing (DOM, network, timeline)\
-9.  Dockerized Execution\
-10. Mounted Artifact Persistence\
-11. Environment-Based Configuration\
-12. Structured Logging\
-13. GitHub Actions CI Integration\
-14. Artifact Upload in CI\
-15. Ruff Linting Enforcement\
-16. Pre-Commit Hook Support\
-17. Clean Page Object Model\
-18. JSON-Based Locator Strategy\
-19. Contract-Level Network Validation\
-20. Modular, Recruiter-Ready Architecture
+1.  Plugin-Based Playwright Lifecycle
+2.  Multi-Browser Execution (Chromium, Firefox, WebKit)
+3.  Headed and Headless Execution
+4.  Parallel Execution
+5.  Retry Strategy via pytest-rerunfailures
+6.  Automatic Screenshot on Failure
+7.  Video Recording per Test
+8.  Playwright Tracing (DOM, network, timeline)
+9.  Dockerized Execution
+10. Mounted Artifact Persistence
+11. Environment-Based Configuration
+12. Structured Logging
+13. GitHub Actions CI Integration
+14. Artifact Upload in CI
+15. Ruff Linting Enforcement
+16. Pre-Commit Hook Support
+17. Clean Page Object Model
+18. JSON-Based Locator Strategy
+19. Contract-Level Network Validation
+20. Modular
 
 ------------------------------------------------------------------------
 
@@ -126,21 +124,21 @@ This separation ensures clean responsibilities and maintainability.
 
 ## 6. Running Tests
 
-Run all tests:
+Run search tests:
 
-    pytest
+    pytest ui/tests/test_search.py --headed --browser chromium
 
 Run specific browser:
 
-    pytest --browser firefox
+    pytest ui/tests/test_search.py --browser chromium
 
 Run headed mode:
 
-    pytest --headed
+    pytest ui/tests/test_search.py --headed --browser chromium
 
 Run in parallel:
 
-    pytest -n 4
+    pytest ui/tests/test_search.py --headed --browser chromium -n 4
 
 ------------------------------------------------------------------------
 
@@ -148,15 +146,15 @@ Run in parallel:
 
 Run contract tests:
 
-    pytest -m contract
+    pytest -m contract --headed --browser chromium
 
 Run negative tests:
 
-    pytest -m negative
+    pytest -m negative --headed --browser chromium
 
 Run API tests:
 
-    pytest -m api
+    pytest -m api --headed --browser chromium
 
 ------------------------------------------------------------------------
 
@@ -246,11 +244,11 @@ The ConfigReader class dynamically resolves base URLs.
 
 ## 13. Design Decisions
 
--   No raw selectors in tests\
--   Centralized locator strategy\
--   Flow-based test orchestration\
--   Browser lifecycle managed by plugin\
--   Docker-first reproducibility\
+-   No raw selectors in tests
+-   Centralized locator strategy
+-   Flow-based test orchestration
+-   Browser lifecycle managed by plugin
+-   Docker-first reproducibility
 -   CI integration from day one
 
 ------------------------------------------------------------------------
