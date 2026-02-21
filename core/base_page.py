@@ -3,7 +3,6 @@ from pathlib import Path
 
 
 class BasePage:
-
     def __init__(self, page, config):
         self.page = page
         self.config = config

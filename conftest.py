@@ -1,6 +1,8 @@
 import logging
 import os
+
 import pytest
+
 from core.config_reader import ConfigReader
 
 # =========================================================
@@ -16,6 +18,7 @@ def pytest_addoption(parser):
 # GLOBAL LOGGING SETUP
 # =========================================================
 
+
 @pytest.fixture(scope="session", autouse=True)
 def setup_logging():
     os.makedirs("reports/logs", exist_ok=True)
@@ -26,9 +29,7 @@ def setup_logging():
         logger.handlers.clear()
 
     file_handler = logging.FileHandler("reports/logs/test.log")
-    formatter = logging.Formatter(
-        "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
-    )
+    formatter = logging.Formatter("%(asctime)s | %(levelname)s | %(name)s | %(message)s")
     file_handler.setFormatter(formatter)
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
