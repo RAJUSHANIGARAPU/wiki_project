@@ -1,10 +1,9 @@
 from ui.pages.home_page import HomePage
-from ui.pages.search_results_page import SearchResultsPage
 from ui.pages.lot_page import LotPage
+from ui.pages.search_results_page import SearchResultsPage
 
 
 class SearchFlow:
-
     def __init__(self, page, config):
         self.home = HomePage(page, config)
         self.results = SearchResultsPage(page, config)

@@ -1,9 +1,11 @@
 import re
-from core.base_page import BasePage
+
 from playwright.sync_api import expect
 
-class LotPage(BasePage):
+from core.base_page import BasePage
 
+
+class LotPage(BasePage):
     def get_title(self):
         return self.resolve("lot_title").inner_text().strip()
 
@@ -16,11 +18,6 @@ class LotPage(BasePage):
 
     def verify_lot_page_loaded(self):
         # verify lot id pattern exists
-        expect(self.page).to_have_url(
-            re.compile(r"/en/l/\d+-")
-        )
+        expect(self.page).to_have_url(re.compile(r"/en/l/\d+-"))
         expect(self.resolve("lot_title")).to_be_visible()
-        expect(
-            self.resolve("current_bid_section")
-            .get_by_text("Current bid")
-        ).to_be_visible()
+        expect(self.resolve("current_bid_section").get_by_text("Current bid")).to_be_visible()

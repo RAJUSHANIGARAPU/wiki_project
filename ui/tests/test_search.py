@@ -31,6 +31,7 @@ def test_search_train(page, config):
     assert re.search(r"\d+", favorites)
     assert "€" in bid
 
+
 @pytest.mark.negative
 def test_no_results_for_empty_search(page, config):
     with open("ui/testdata/test_data.json") as f:
