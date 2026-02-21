@@ -3,7 +3,7 @@ import os
 
 
 class ConfigReader:
-    def __init__(self, env="qas"):
+    def __init__(self, env="qa"):
         base_path = os.path.dirname(os.path.dirname(__file__))
         config_path = os.path.join(base_path, "config", "environments.json")
 
