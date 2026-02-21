@@ -1,0 +1,37 @@
+{
+  "register_popup_close": {
+    "type": "role",
+    "role": "button",
+    "name": "Close"
+  },
+  "search_input": {
+    "type": "testid",
+    "value": "search-field"
+  },
+  "search_button": {
+    "type": "role",
+    "role": "button",
+    "name": "Search"
+  },
+  "cookie_accept_button": {
+    "type": "role",
+    "role": "button",
+    "name": "Agree"
+  },
+  "lot_cards": {
+    "type": "css",
+    "value": "article"
+  },
+  "lot_title": {
+    "type": "css",
+    "value": "h1"
+  },
+  "lot_favorites_button": {
+    "type": "css",
+    "value": "button[title='favourite']"
+  },
+  "current_bid_section": {
+    "type": "css",
+    "value": "[data-testid='lot-bid-status-section']"
+  }
+}

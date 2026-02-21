@@ -1,8 +1,8 @@
 {
-  "dev": {
-    "base_url": "https://www.google.com"
-  },
   "qa": {
-    "base_url": "https://www.wikipedia.org"
+    "base_url": "https://www.catawiki.com/en/"
+  },
+  "staging": {
+    "base_url": "https://www.catawiki.com/en/"
   }
 }
