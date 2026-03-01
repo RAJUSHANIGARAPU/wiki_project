@@ -23,19 +23,31 @@
     "value": "article"
   },
   "lot_title": {
-    "type": "css",
-    "value": "h1"
+    "type": "role",
+    "role": "heading",
+    "level": 1
   },
   "lot_favorites_button": {
     "type": "css",
     "value": "button[title='favourite']"
   },
   "current_bid_section": {
-    "type": "css",
-    "value": "[data-testid='lot-bid-status-section']"
+    "type": "testid",
+    "value": "lot-bid-status-section"
   },
   "search_no_results_message": {
-    "type": "css",
-    "value": "p:has-text('No matches for')"
+    "type": "text",
+    "value": "No matches for",
+    "exact": false
+  },
+  "bid_title": {
+    "type": "text",
+    "value": "bid",
+    "exact": false
+  },
+  "bid_amount": {
+    "type": "text",
+    "value": "€",
+    "exact": false
   }
 }
