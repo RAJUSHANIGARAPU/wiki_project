@@ -19,12 +19,24 @@ class BasePage:
             return self.page.locator(locator["value"])
 
         if locator_type == "role":
-            return self.page.get_by_role(locator["role"], name=locator["name"])
+            role = locator["role"]
+            name = locator.get("name")
+            level = locator.get("level")
+            kwargs = {}
+            if name:
+                kwargs["name"] = name
+            if level:
+                kwargs["level"] = level
+            return self.page.get_by_role(role, **kwargs)
+
 
         if locator_type == "placeholder":
             return self.page.get_by_placeholder(locator["value"])
 
         if locator_type == "testid":
             return self.page.get_by_test_id(locator["value"])
+
+        if locator_type == "text":
+            return self.page.get_by_text(locator["value"], exact=locator.get("exact", True))
 
         raise ValueError(f"Unsupported locator type: {locator_type}")

@@ -12,17 +12,13 @@ def test_search_train(page, config):
         data = json.load(f)
 
     flow = SearchFlow(page, config)
-
     flow.search_and_open_second_lot(data["valid_search"])
-
     title = flow.lot.get_title()
     favorites = flow.lot.get_favorites()
     bid = flow.lot.get_current_bid()
-
     print(f"Lot Name: {title}")
     print(f"Favorites: {favorites}")
     print(f"{bid[0]}: {bid[1]}")
-
     logger.info(f"Lot Name: {title}")
     logger.info(f"Favorites: {favorites}")
     logger.info(f"{bid[0]}: {bid[1]}")

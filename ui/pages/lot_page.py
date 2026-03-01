@@ -9,16 +9,14 @@ class LotPage(BasePage):
     def get_title(self):
         return self.resolve("lot_title").inner_text().strip()
 
-    def get_favorites(self):
-        return self.resolve("lot_favorites_button").first.get_attribute("count")
-
     def get_current_bid(self):
         section = self.resolve("current_bid_section")
-        # Get the bid title (Current bid / Starting bid)
-        bid_type = section.locator("div[class*='status-title']").first.inner_text().strip()
-        # Get the € amount
-        amount = section.locator("div[class*='bid-amount']").first.inner_text().strip()
+        bid_type = section.get_by_text("bid", exact=False).first.inner_text().strip()
+        amount = section.get_by_text("€").first.inner_text().strip()
         return bid_type, amount
+
+    def get_favorites(self):
+        return self.resolve("lot_favorites_button").first.get_attribute("count")
 
     def verify_lot_page_loaded(self):
         # verify lot id pattern exists
