@@ -59,12 +59,9 @@ def config(request):
 def enable_artifacts(context, request):
     os.makedirs("reports/videos", exist_ok=True)
     os.makedirs("reports/traces", exist_ok=True)
-
     # Start tracing
     context.tracing.start(screenshots=True, snapshots=True, sources=True)
-
     yield
-
     # Stop tracing after test
     trace_path = f"reports/traces/{request.node.name}.zip"
     context.tracing.stop(path=trace_path)

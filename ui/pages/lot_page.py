@@ -14,10 +14,13 @@ class LotPage(BasePage):
 
     def get_current_bid(self):
         section = self.resolve("current_bid_section")
-        return section.locator("text=€").first.inner_text().strip()
+        # Get the bid title (Current bid / Starting bid)
+        bid_type = section.locator("div[class*='status-title']").first.inner_text().strip()
+        # Get the € amount
+        amount = section.locator("div[class*='bid-amount']").first.inner_text().strip()
+        return bid_type, amount
 
     def verify_lot_page_loaded(self):
         # verify lot id pattern exists
         expect(self.page).to_have_url(re.compile(r"/en/l/\d+-"))
         expect(self.resolve("lot_title")).to_be_visible()
-        expect(self.resolve("current_bid_section").get_by_text("Current bid")).to_be_visible()

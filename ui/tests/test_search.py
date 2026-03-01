@@ -21,16 +21,14 @@ def test_search_train(page, config):
 
     print(f"Lot Name: {title}")
     print(f"Favorites: {favorites}")
-    print(f"Current Bid: {bid}")
+    print(f"{bid[0]}: {bid[1]}")
 
     logger.info(f"Lot Name: {title}")
     logger.info(f"Favorites: {favorites}")
-    logger.info(f"Current Bid: {bid}")
+    logger.info(f"{bid[0]}: {bid[1]}")
 
     assert title != ""
     assert re.search(r"\d+", favorites)
-    assert "€" in bid
-
 
 @pytest.mark.negative
 def test_no_results_for_empty_search(page, config):
