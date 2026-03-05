@@ -31,7 +31,7 @@ jobs:
         run: ruff check .
 
       - name: Run Tests
-        run: pytest -n 4 --browser chromium
+        run: pytest -n 3 --headed --browser chromium
 
       - name: Upload Reports
         if: always()
