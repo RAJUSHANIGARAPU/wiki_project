@@ -18,6 +18,10 @@
     "role": "button",
     "name": "Agree"
   },
+  "cookie_overlay": {
+    "type": "css",
+    "value": ".CookiesBar_overlay__U4Gmj"
+  },
   "lot_cards": {
     "type": "css",
     "value": "article"

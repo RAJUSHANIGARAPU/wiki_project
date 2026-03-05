@@ -10,7 +10,10 @@ class HomePage(BasePage):
 
     def accept_cookies(self):
         try:
-            self.resolve("cookie_accept_button").click(timeout=3000)
+            button = self.resolve("cookie_accept_button")
+            button.wait_for(state="visible", timeout=5000)
+            button.click()
+            self.resolve("cookie_overlay").wait_for(state="hidden")
         except PlaywrightTimeoutError:
             pass
 
