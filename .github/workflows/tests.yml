@@ -30,8 +30,11 @@ jobs:
       - name: Run Linter
         run: ruff check .
 
+      - name: Install Xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
       - name: Run Tests
-        run: pytest -n 3 --headed --browser chromium
+        run: xvfb-run pytest -n auto --browser chromium --headed
 
       - name: Upload Reports
         if: always()
