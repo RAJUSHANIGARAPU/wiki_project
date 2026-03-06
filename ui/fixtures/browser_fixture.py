@@ -1,3 +1,15 @@
+"""
+Custom browser fixture.
+
+Currently not used because pytest-playwright manages the browser lifecycle.
+This fixture exists for advanced scenarios such as:
+
+• multi-user tests
+• custom browser launch options
+• remote browsers
+• mobile device emulation
+"""
+
 import os
 
 import pytest
