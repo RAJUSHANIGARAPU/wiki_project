@@ -29,7 +29,6 @@ class BasePage:
                 kwargs["level"] = level
             return self.page.get_by_role(role, **kwargs)
 
-
         if locator_type == "placeholder":
             return self.page.get_by_placeholder(locator["value"])
 

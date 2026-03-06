@@ -26,6 +26,7 @@ def test_search_train(page, config):
     assert title != ""
     assert re.search(r"\d+", favorites)
 
+
 @pytest.mark.negative
 def test_no_results_for_empty_search(page, config):
     with open("ui/testdata/test_data.json") as f:
