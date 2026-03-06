@@ -1,5 +1,7 @@
 import logging
 import os
+import shutil
+from datetime import datetime
 
 import pytest
 
@@ -63,8 +65,25 @@ def enable_artifacts(context, request):
     context.tracing.start(screenshots=True, snapshots=True, sources=True)
     yield
     # Stop tracing after test
-    trace_path = f"reports/traces/{request.node.name}.zip"
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    test_name = request.node.name
+    browser = request.config.getoption("--browser")
+
+    trace_path = f"reports/traces/{test_name}_{browser}_{timestamp}.zip"
     context.tracing.stop(path=trace_path)
+
+    # Save video references before closing context
+    videos = []
+    for page in context.pages:
+        if page.video:
+            videos.append(page.video)
+
+    context.close()
+
+    for video in videos:
+        video_path = video.path()
+        new_video = f"reports/videos/{test_name}_{browser}_{timestamp}.webm"
+        shutil.move(video_path, new_video)
 
 
 # =========================================================
