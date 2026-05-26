@@ -33,7 +33,7 @@ for path in list(paths)[:10]: print(' ', path)
 "
 ```
 
-Extract endpoints, tags, schemas, security schemes — same as anva6 counterpart.
+Extract endpoints, tags, schemas, security schemes.
 
 ---
 
