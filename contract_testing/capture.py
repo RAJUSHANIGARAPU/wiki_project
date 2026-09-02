@@ -24,6 +24,14 @@ worse than one nobody recorded.
 pytest-xdist workers apart — "captures from gw0 never appear in gw1". xdist
 workers are separate processes and never shared this state to begin with.)
 
+**Retention — bounded count, bounded size.**
+Response bodies used to be kept whole, and every interaction was held until
+``pytest_sessionfinish`` deduplicated them. Ten thousand calls to one endpoint
+held ten thousand bodies in order to build one interaction. Duplicates are now
+collapsed where they arrive, counted in ``occurrences``, and bodies are clipped
+to something schema-equivalent — a contract records the *shape* of a response,
+and ``consumer.infer_schema`` reads only types, keys and a list's first element.
+
 Safety guarantees:
 - The original ``send`` and ``Thread.start`` are always restored, even on exceptions
 - Capture errors are logged, never raised — test behaviour is never affected
@@ -37,6 +45,7 @@ import threading
 from dataclasses import dataclass, field
 from urllib.parse import urlparse
 
+from contract_testing.consumer import normalize_path
 from contract_testing.redaction import redact_headers, redact_query
 
 logger = logging.getLogger(__name__)
@@ -60,6 +69,13 @@ _SKIP_RESPONSE_HEADERS = frozenset(
     {"content-length", "transfer-encoding", "connection", "date", "server"}
 )
 
+# Ceilings, deliberately far above any response a contract needs to describe, so
+# an ordinary body passes through byte-for-byte and only a runaway one is cut.
+_MAX_KEYS_PER_TEST = 500  # distinct method+path+status combinations
+_MAX_STRING_CHARS = 2_000
+_MAX_LIST_ITEMS = 20
+_MAX_DEPTH = 20
+
 
 @dataclass
 class _Session:
@@ -68,6 +84,8 @@ class _Session:
     token: object
     test_name: str
     interactions: list[dict] = field(default_factory=list)
+    index: dict[str, dict] = field(default_factory=dict)
+    dropped_keys: int = 0
     warned_threads: set[int] = field(default_factory=set)
 
 
@@ -128,6 +146,13 @@ def deactivate() -> list[dict]:
     setattr(threading.current_thread(), _TOKEN_ATTR, None)
     if session is None:
         return []
+    if session.dropped_keys:
+        logger.warning(
+            "[contract] %s hit more than %d distinct endpoints — %d were not captured",
+            session.test_name or "this test",
+            _MAX_KEYS_PER_TEST,
+            session.dropped_keys,
+        )
     return list(session.interactions)
 
 
@@ -214,10 +239,17 @@ def _log_unattributed(request) -> None:
 
 def _record(session: _Session, request, response) -> None:
     parsed = urlparse(request.url)
-    req_body = _parse_body(request.body)
+    # Keyed on the same normalised path the contract is keyed on, so collapsing
+    # here can never drop an interaction the contract would have kept. Status is
+    # part of the key: a 500 on an endpoint that usually 200s is signal.
+    key = f"{request.method.upper()} {normalize_path(parsed.path)} {response.status_code}"
+
+    if _count_repeat(session, key):
+        return
+
     resp_body = None
     try:
-        resp_body = response.json()
+        resp_body = _bound(response.json())
     except Exception:  # noqa: BLE001
         pass
 
@@ -231,16 +263,58 @@ def _record(session: _Session, request, response) -> None:
         "request_headers": redact_headers(
             _filter_headers(dict(request.headers), _SKIP_REQUEST_HEADERS)
         ),
-        "request_body": req_body,
+        "request_body": _parse_body(request.body),
         "status": response.status_code,
         "response_headers": redact_headers(
             _filter_headers(dict(response.headers), _SKIP_RESPONSE_HEADERS)
         ),
         "response_body": resp_body,
         "test_name": session.test_name,
+        "occurrences": 1,
     }
+
     with _state_lock:
+        # Re-checked: two threads can reach a new endpoint at the same time, and
+        # only one of them may append.
+        seen = session.index.get(key)
+        if seen is not None:
+            seen["occurrences"] += 1
+            return
+        session.index[key] = interaction
         session.interactions.append(interaction)
+
+
+def _count_repeat(session: _Session, key: str) -> bool:
+    """True when this key is already held (or the test is over its ceiling)."""
+    with _state_lock:
+        seen = session.index.get(key)
+        if seen is not None:
+            seen["occurrences"] += 1
+            return True
+        if len(session.index) >= _MAX_KEYS_PER_TEST:
+            session.dropped_keys += 1
+            return True
+    return False
+
+
+def _bound(value, depth: int = 0):  # noqa: ANN001, ANN201
+    """Clip a parsed body to something a contract cannot tell apart.
+
+    ``consumer.infer_schema`` reads types, dict keys, and only the *first*
+    element of a list, so a page of ten thousand rows and its first twenty
+    produce the same schema. Keys are never dropped — they are what ``required``
+    is built from, and the provider validator checks the retained body against
+    that schema.
+    """
+    if depth > _MAX_DEPTH:
+        return None
+    if isinstance(value, str):
+        return value[:_MAX_STRING_CHARS]
+    if isinstance(value, list):
+        return [_bound(item, depth + 1) for item in value[:_MAX_LIST_ITEMS]]
+    if isinstance(value, dict):
+        return {key: _bound(item, depth + 1) for key, item in value.items()}
+    return value
 
 
 def _parse_body(body) -> object:
@@ -248,12 +322,12 @@ def _parse_body(body) -> object:
         return None
     if isinstance(body, bytes):
         try:
-            return json.loads(body.decode("utf-8"))
+            return _bound(json.loads(body.decode("utf-8")))
         except (ValueError, UnicodeDecodeError):
             return body.decode("utf-8", errors="replace")[:200]
     if isinstance(body, str):
         try:
-            return json.loads(body)
+            return _bound(json.loads(body))
         except ValueError:
             return body[:200]
     return body
