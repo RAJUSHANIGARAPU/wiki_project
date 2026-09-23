@@ -1,3 +1,8 @@
+---
+description: "Use when a branch is done and tests pass locally: checks the branch, summarises test results, pushes it, and opens a GitHub pull request with the gh CLI including changed files and test health."
+disable-model-invocation: true
+---
+
 # create-pr
 
 After tests pass locally, open a GitHub pull request for the current branch using the `gh` CLI.
@@ -46,7 +51,7 @@ python3 -m py_compile ui/tests/test_*.py api/tests/test_*.py 2>&1 | head -10
 # Parse last junit XML results if available
 python3 -c "
 import glob, xml.etree.ElementTree as ET
-files = glob.glob('target/junit/*.xml') + glob.glob('test-results/*.xml')
+files = glob.glob('reports/*.xml')
 if not files:
     print('No test results found — run tests first or use /test-health-report.')
 else:
@@ -113,7 +118,7 @@ CHANGED=$(git diff --name-only origin/$TARGET...$CURRENT_BRANCH | sed 's/^/- /' 
 # Gather test summary
 TEST_SUMMARY=$(python3 -c "
 import glob, xml.etree.ElementTree as ET
-files = glob.glob('target/junit/*.xml') + glob.glob('test-results/*.xml')
+files = glob.glob('reports/*.xml')
 if not files:
     print('No test results — run /test-health-report first.')
 else:

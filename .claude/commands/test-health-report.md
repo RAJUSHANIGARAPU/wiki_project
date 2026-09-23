@@ -1,3 +1,7 @@
+---
+description: "Use before a merge or when asking how healthy the suite is: runs pytest, parses the JUnit XML, lists failures, healing events and flakiness signals, and gives a PASS/WARN/BLOCK deploy-gate call."
+---
+
 # test-health-report
 
 Run the full test suite and produce a clean health report: pass/fail per test, healing events,
@@ -19,7 +23,7 @@ Examples:
 ## Phase 1 — Pre-flight
 
 ```bash
-BASE_URL=$(python3 -c "import yaml; d=yaml.safe_load(open('config/development.yml')); print(d.get('base_url',''))" 2>/dev/null)
+BASE_URL=$(python3 -c "import json; print(json.load(open('config/environments.json'))['qa']['base_url'])" 2>/dev/null)
 curl -s -o /dev/null -w "%{http_code}" "$BASE_URL" --max-time 10
 ```
 
@@ -37,7 +41,7 @@ find ui/tests -name "test_*.py" | xargs grep -l "^def test_\|^async def test_" |
 ```bash
 cd /path/to/wiki_project
 source venv/bin/activate 2>/dev/null || true
-pytest --env=development ${ARGS} \
+pytest --env=qa ${ARGS} \
   --tb=short -q \
   --junit-xml=reports/health-run.xml \
   2>&1 | tee /tmp/wiki-health-run.log | tail -40
@@ -105,7 +109,7 @@ Output a clean markdown report:
 
 ```
 ## Test Health Report — <date> <time>
-**Environment:** development  |  **Branch:** <git branch>  |  **Duration:** <Xs>
+**Environment:** qa  |  **Branch:** <git branch>  |  **Duration:** <Xs>
 
 ### Summary
 | Status    | Count |

@@ -1,3 +1,7 @@
+---
+description: "Use to find what is specified but untested: compares specs/*.md scenarios, OpenAPI files and Postman collections against ui/tests and api/tests, writes a gap report, and offers to generate the missing tests."
+---
+
 # detect-coverage-gaps
 
 Compare what the OpenAPI/Swagger spec (or existing spec files) defines against what the
@@ -173,11 +177,11 @@ If no → save the report only.
 
 ```bash
 # Save report
-mkdir -p target
-cat > target/coverage-gap-report-$(date +%Y%m%d).md << 'EOF'
+mkdir -p reports
+cat > reports/coverage-gap-report-$(date +%Y%m%d).md << 'EOF'
 <report content>
 EOF
-echo "Saved to target/coverage-gap-report-$(date +%Y%m%d).md"
+echo "Saved to reports/coverage-gap-report-$(date +%Y%m%d).md"
 ```
 
 ---
