@@ -89,16 +89,18 @@ for path in specs[:3]:
 
 For each `specs/*.md` file, read:
 - `feature:` frontmatter → feature name
-- `## Scenario:` headings → scenario names
+- `## Scenario <name>` headings → scenario names (colon optional: `## Scenario: <name>` also matches)
 - `### Tags` → `ui`, `api`, `smoke`, `regression`
 
 ```python
 import glob, re
 
 for path in glob.glob('specs/*.md'):
+    if path.endswith('README.md'):  # format guide, its scenario is a placeholder
+        continue
     content = open(path).read()
     feature = re.search(r'feature:\s*(\S+)', content)
-    scenarios = re.findall(r'^## Scenario:\s*(.+)$', content, re.MULTILINE)
+    scenarios = re.findall(r'^## Scenario(?::|[ \t])[ \t]*(\S.*)$', content, re.MULTILINE)
     tags_blocks = re.findall(r'### Tags\n`([^`]+)`', content)
     print(f'{path}: {len(scenarios)} scenarios  feature={feature.group(1) if feature else "?"}')
     for s in scenarios:
@@ -128,8 +130,10 @@ for path in glob.glob('ui/tests/test_*.py') + glob.glob('api/tests/test_*.py'):
 
 # Check each spec
 for spec_path in glob.glob('specs/*.md'):
+    if spec_path.endswith('README.md'):
+        continue
     content = open(spec_path).read()
-    scenarios = re.findall(r'^## Scenario:\s*(.+)$', content, re.MULTILINE)
+    scenarios = re.findall(r'^## Scenario(?::|[ \t])[ \t]*(\S.*)$', content, re.MULTILINE)
     for scenario in scenarios:
         key = 'test_' + re.sub(r'[^a-z0-9]+', '_', scenario.lower()).strip('_')
         covered = any(key in f for f in test_funcs)
@@ -189,6 +193,6 @@ echo "Saved to reports/coverage-gap-report-$(date +%Y%m%d).md"
 ## Notes
 
 - Run this after every new spec is added or after API changes to catch missing coverage immediately
-- Spec `## Scenario:` headings are the unit of coverage — one test function per scenario minimum
+- Spec `## Scenario <name>` headings are the unit of coverage — one test function per scenario minimum
 - API endpoints with no test → flag with `@pytest.mark.xfail(reason="no test yet")` placeholder
 - The wiki_project Postman pipeline (`api/agents/orchestrator.py`) can generate missing API tests automatically

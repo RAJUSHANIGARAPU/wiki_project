@@ -81,18 +81,32 @@ git diff --name-only origin/$TARGET...$CURRENT_BRANCH | head -30
 # Recent commits
 git log --oneline origin/$TARGET...$CURRENT_BRANCH | head -10
 
-# Healing events summary
-python3 -c "
-import json, glob
-logs = glob.glob('target/logs/healing-events.log') + glob.glob('logs/healing-events.log')
-if not logs:
-    print('No healing events.')
-else:
-    events = [json.loads(l) for l in open(logs[0]) if l.strip()]
-    print(f'AI self-heals: {len(events)}')
-    for e in events[:3]:
-        print(f'  - {e.get(\"locatorKey\",\"?\")} healed')
-" 2>/dev/null || true
+# Healing summary. Only `python -m autonomous_ui.orchestrator` writes this log (a plain
+# pytest run never heals), and it is append-only, so count rows since the branch point.
+# An absent or empty log is NOT MEASURED, never zero.
+SINCE=$(git log -1 --format=%cI "$(git merge-base origin/$TARGET $CURRENT_BRANCH)")
+HEALING_SUMMARY=$(python3 - "$SINCE" <<'PY'
+import json, sys
+from datetime import datetime
+from pathlib import Path
+log = Path("reports/ui_healing_sessions.jsonl")
+lines = [l for l in log.read_text().splitlines() if l.strip()] if log.exists() else []
+if not lines:
+    print("healing data: NOT MEASURED (reports/ui_healing_sessions.jsonl absent or empty)")
+    sys.exit()
+since = datetime.fromisoformat(sys.argv[1])
+rows = [r for r in map(json.loads, lines) if datetime.fromisoformat(r["timestamp"]) >= since]
+if not rows:
+    print(f"healing data: NOT MEASURED (no orchestrator session since {sys.argv[1]})")
+    sys.exit()
+applied = [r for r in rows if r.get("applied")]
+print(f"Healing sessions since branch point: {len(rows)} decisions, {len(applied)} applied")
+for r in applied[:5]:
+    files = ", ".join(r.get("patched_files") or []) or "no files"
+    print(f"- {r.get('test','?')}: {r.get('strategy','?')} ({r.get('failure_type','?')}) -> {files}")
+PY
+)
+echo "$HEALING_SUMMARY"
 ```
 
 ---
@@ -132,12 +146,16 @@ else:
     print(f'Tests: {total}  Pass: {total-fail-skip}  Fail: {fail}  Skip: {skip}  Gate: {gate}')
 " 2>/dev/null || echo "Run /test-health-report for details.")
 
+COMMITS=$(git log --format='- %s' origin/$TARGET..$CURRENT_BRANCH | head -10)
+
+# HEALING_SUMMARY comes from Phase 3; run that block first in the same shell.
+# The heredoc delimiter is unquoted on purpose so $COMMITS, $CHANGED etc. expand.
 gh pr create \
   --title "$TITLE" \
   --base "$TARGET" \
-  --body "$(cat << BODY
+  --body "$(cat <<BODY
 ## Summary
-Auto-generated pull request from Claude Code skill \`/create-pr\`.
+$COMMITS
 
 ## Changed files
 $CHANGED
@@ -145,14 +163,14 @@ $CHANGED
 ## Test health
 $TEST_SUMMARY
 
+## Healing
+${HEALING_SUMMARY:-healing data: NOT MEASURED (Phase 3 not run)}
+
 ## Checklist
 - [ ] Tests pass locally (run \`/test-health-report\`)
 - [ ] No regressions in existing test suite
 - [ ] Locator JSON committed if locators were healed
 - [ ] Spec files committed if new scenarios were added
-
----
-🤖 Generated with [Claude Code](https://claude.ai/claude-code)
 BODY
 )"
 ```
@@ -167,6 +185,7 @@ BODY
   Title:  <title>
   Target: <targetBranch>
   Tests:  <pass/fail summary>
+  Healing: <applied count, or NOT MEASURED>
 ```
 
 ---
